@@ -3,7 +3,7 @@ from flask import Flask, request, jsonify
 app = Flask(__name__)
 
 # DDDs bloqueados
-DDDs_bloqueados = {'21', '85', '98'}
+DDDs_bloqueados = {'51'}
 
 @app.route("/webhook", methods=["GET", "POST"])
 def webhook():
@@ -34,3 +34,4 @@ def webhook():
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
+
