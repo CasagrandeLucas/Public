@@ -3,13 +3,13 @@ from flask import Flask, request, jsonify
 app = Flask(__name__)
 
 # DDDs bloqueados
-DDDs_bloqueados = {'51'}
+DDDs_bloqueados = {'51', '42'}
 
 @app.route("/webhook", methods=["GET", "POST"])
 def webhook():
     if request.method == "GET":
         # Verificação do WhatsApp Cloud API
-        token = "MEU_TOKEN_DE_VERIFICACAO"  # Defina qualquer token que você queira
+        token = "CPS1844LFCA"  # Defina qualquer token que você queira
         verify_token = request.args.get("hub.verify_token")
         challenge = request.args.get("hub.challenge")
         if verify_token == token:
@@ -34,4 +34,3 @@ def webhook():
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
-
