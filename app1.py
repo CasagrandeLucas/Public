@@ -2,22 +2,35 @@ from flask import Flask, request, jsonify
 
 app = Flask(__name__)
 
-DDDs_bloqueados = {'21', '85', '98'}  # DDDs bloqueados
+# DDDs bloqueados
+DDDs_bloqueados = {'21', '85', '98'}
 
-@app.route("/webhook", methods=["POST"])
+@app.route("/webhook", methods=["GET", "POST"])
 def webhook():
-    data = request.json
-    numero = data["contacts"][0]["wa_id"]
-    ddd = numero[2:4]
+    if request.method == "GET":
+        # Verificação do WhatsApp Cloud API
+        token = "MEU_TOKEN_DE_VERIFICACAO"  # Defina qualquer token que você queira
+        verify_token = request.args.get("hub.verify_token")
+        challenge = request.args.get("hub.challenge")
+        if verify_token == token:
+            return challenge, 200
+        return "Token inválido", 403
 
-    # Se DDD bloqueado → ignora completamente
-    if ddd in DDDs_bloqueados:
-        print(f"Mensagem de {numero} ignorada (DDD bloqueado)")
-        return jsonify({"status": "ignored"}), 200
+    if request.method == "POST":
+        data = request.json
+        try:
+            numero = data["contacts"][0]["wa_id"]
+            ddd = numero[2:4]
 
-    # Se permitido → aqui você processa a mensagem normalmente
-    print(f"Mensagem de {numero} aceita")
-    return jsonify({"status": "ok"}), 200
+            if ddd in DDDs_bloqueados:
+                print(f"Mensagem de {numero} ignorada (DDD bloqueado)")
+                return jsonify({"status": "ignored"}), 200
+
+            print(f"Mensagem de {numero} aceita")
+            return jsonify({"status": "ok"}), 200
+        except Exception as e:
+            print(f"Erro ao processar mensagem: {e}")
+            return jsonify({"status": "error"}), 400
 
 if __name__ == "__main__":
-    app.run(port=5000)
+    app.run(host="0.0.0.0", port=5000)
